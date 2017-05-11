@@ -202,9 +202,20 @@ public class SendingService extends Service {
             long period_millis = 1000 * send_interval;
             Log.i("SendingService", String.format("scheduleNext: current_uptime=%d send_interval=%d", current_uptime, send_interval));
             // TODO migrate to setInexactRepeating()
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    current_uptime + period_millis,
-                    pendingIntent);
+            if (send_interval >= 300 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        current_uptime + period_millis,
+                        pendingIntent);
+            }
+            else if (send_interval >= 200 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        current_uptime + period_millis,
+                        pendingIntent);
+            } else {
+                alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        current_uptime + period_millis,
+                        pendingIntent);
+            }
             setWaitForAlarm(current_time + period_millis);
         }
     }
