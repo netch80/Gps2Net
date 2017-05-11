@@ -1,0 +1,57 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="enabled"
+        android:title="@string/pref_title_enabled"
+        android:defaultValue="false"
+        android:persistent="true"
+     />
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: See also TextView attributes like android:inputType. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:key="target_host"
+        android:defaultValue=""
+        android:inputType="text"
+        android:maxLines="1"
+        android:selectAllOnFocus="false"
+        android:singleLine="true"
+        android:title="@string/pref_title_target_host"
+        android:persistent="true"
+     />
+
+    <EditTextPreference
+        android:key="target_port"
+        android:defaultValue=""
+        android:inputType="number"
+        android:maxLines="1"
+        android:selectAllOnFocus="false"
+        android:singleLine="true"
+        android:title="@string/pref_title_target_port"
+        android:persistent="true"
+     />
+
+    <EditTextPreference
+        android:key="send_interval"
+        android:defaultValue="300"
+        android:inputType="number"
+        android:maxLines="1"
+        android:selectAllOnFocus="false"
+        android:singleLine="true"
+        android:title="@string/pref_title_send_interval"
+        android:persistent="true"
+        />
+
+    <EditTextPreference
+        android:key="client_id"
+        android:defaultValue="0"
+        android:inputType="number"
+        android:maxLines="1"
+        android:selectAllOnFocus="false"
+        android:singleLine="true"
+        android:title="Client identifier"
+        android:persistent="true"
+     />
+
+</PreferenceScreen>
