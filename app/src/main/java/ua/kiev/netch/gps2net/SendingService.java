@@ -33,6 +33,10 @@ public class SendingService extends Service {
     String action_service_notify;
     String action_alarm;
     int prev_send_interval = 0;
+    long ts_prev_alarm = 0;
+    long td_alarm = 0;
+    long ts_prev_update = 0;
+    long td_update = 0;
 
     SendingService() {
         super();
@@ -79,9 +83,7 @@ public class SendingService extends Service {
         public void onReceive(Context context, Intent intent) {
             Log.i("SendingService", String.format("got something: action=<%s>", intent.getAction()));
             if (intent.getAction().equals(action_alarm)) {
-                owner.setWaitForAlarm(0);
-                owner.requestLocation();
-                owner.scheduleNext();
+                owner.my_onAlarm();
             } else {
                 Log.w("SendingService", String.format("Unknown received intent action: %s", intent.getAction()));
             }
@@ -141,6 +143,15 @@ public class SendingService extends Service {
         //- throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    void my_onAlarm() {
+        long now = System.currentTimeMillis();
+        setWaitForAlarm(0);
+        requestLocation();
+        scheduleNext();
+        td_alarm = now - ts_prev_alarm;
+        ts_prev_alarm = now;
+    }
+
     void requestLocation() {
         Log.i("SendingService", "requestLocation");
         // Shall call checkPermission() or catch SecurityException
@@ -153,6 +164,9 @@ public class SendingService extends Service {
 
     public void onLocationChanged(Location location) {
         Log.i("SendingService", "onLocationChanged");
+        long now = System.currentTimeMillis();
+        td_update = now - ts_prev_update;
+        ts_prev_update = now;
         // TODO send this location
         // TODO? send the same data to main activity, if present
         //
@@ -164,8 +178,8 @@ public class SendingService extends Service {
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
         int client_id = Integer.valueOf(preferences.getString("client_id", "0"));
-        String msg1 = String.format(Locale.US, "v=1 id=%d time=%d lat=%1.5f lgt=%1.5f acr=%1.5f",
-                client_id, secs, latitude, longitude, accuracy);
+        String msg1 = String.format(Locale.US, "v=1 id=%d time=%d lat=%1.5f lgt=%1.5f acr=%1.5f td_alarm=%s td_update=%s",
+                client_id, secs, latitude, longitude, accuracy, td_alarm, td_update);
         MySender async_sender = new MySender();
         async_sender.target_host = preferences.getString("target_host", "");
         async_sender.target_port = Integer.valueOf(preferences.getString("target_port", "0"));
